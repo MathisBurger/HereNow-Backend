@@ -1,6 +1,5 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using PresenceBackend.Data;
+using PresenceBackend.Shared;
 
 namespace PresenceBackend;
 
@@ -13,12 +12,9 @@ public class Program
         // Add services to the container.
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                                throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-        builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlite(connectionString));
+        builder.Services.AddDbContext<DatabaseContext>(options =>
+            options.UseSqlServer(connectionString));
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-        builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-            .AddEntityFrameworkStores<ApplicationDbContext>();
         builder.Services.AddControllers();
         
         builder.Services.AddEndpointsApiExplorer();
@@ -35,6 +31,11 @@ public class Program
         app.UseRouting();
         app.UseAuthorization();
         app.UseEndpoints(endpoints => endpoints.MapControllers());
+        
+        //using (var serviceScope = app.Services.CreateScope())
+        //    using (var context = serviceScope.ServiceProvider.GetRequiredService<DatabaseContext>()!)
+        //        context.Database.Migrate();
+        
         app.Run();
     }
 }
