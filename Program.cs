@@ -31,7 +31,7 @@ public class Program
             {
                 Title = "Presence Backend",
                 Version = "v1",
-                Description = "The complete backend for presence"
+                Description = "The complete backend for presence. NOTE: The endpoint test functionality does not work, because it is not intended to work for all endpoints"
             });
         });
         

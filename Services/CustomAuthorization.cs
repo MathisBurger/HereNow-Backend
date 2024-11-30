@@ -23,7 +23,8 @@ public class CustomAuthorization : IAuthorization
     public CustomAuthorization(DbAccess db)
     {
         this.Db = db;
-        this.jwtSignKey = RandomNumberGenerator.GetBytes(2048);
+        //this.jwtSignKey = RandomNumberGenerator.GetBytes(2048);
+        this.jwtSignKey = new byte[] {0x12};
     }
 
     public string GenerateAccessToken(User claims) => 
@@ -34,11 +35,12 @@ public class CustomAuthorization : IAuthorization
             .Encode();
     
 
-    public string GenerateRefreshToken(User claims)
+    public async Task<string> GenerateRefreshToken(User claims)
     {
         claims.RefreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(256));
         claims.RefreshTokenExpiry = DateTime.UtcNow.Add(Constants.RefreshTokenSessionDuration);
         this.Db.EntityManager.Update(claims);
+        await this.Db.EntityManager.SaveChangesAsync();
         return claims.RefreshToken!;
     }
 
@@ -54,13 +56,24 @@ public class CustomAuthorization : IAuthorization
 
     public async Task<User?> ValidateAccessToken(string token)
     {
-        IDictionary<string, string> claims = JwtBuilder.MustVerifySignature().Decode<IDictionary<string, string>>(token);
+        IDictionary<string, object> claims = JwtBuilder.MustVerifySignature().Decode<IDictionary<string, object>>(token);
         if (!claims.ContainsKey("uid"))
         {
             return null;
         }
-        Guid uid = Guid.Parse(claims["uid"]);
-        return await this.Db.UserRepository.FindOneById(uid);
+
+        if (!claims.TryGetValue("uid", out var userId))
+        {
+            return null;
+        }
+
+        string? stringUid = userId?.ToString();
+        if (Guid.TryParse(stringUid, out Guid uid))
+        {
+            return await this.Db.UserRepository.FindOneById(uid);
+        }
+
+        return null;
     }
 
     public async Task<bool> ValidateLoginCredentials(LoginRequest loginRequest)

@@ -8,7 +8,7 @@ public interface IAuthorization
 
     string GenerateAccessToken(User claims);
     
-    string GenerateRefreshToken(User claims);
+    Task<string> GenerateRefreshToken(User claims);
     
     Task<User?> ValidateRefreshToken(string token);
     

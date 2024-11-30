@@ -9,6 +9,7 @@ public class DatabaseContext : DbContext, IContext
     private readonly IConfiguration configuration;
     
     public DbSet<User> Users { get; set; }
+    public DbSet<UserStatus> UserStatuses { get; set; }
 
     public DatabaseContext(IConfiguration configuration)
     {

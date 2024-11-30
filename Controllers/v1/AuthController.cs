@@ -51,7 +51,7 @@ public class AuthController: ControllerBase
             return BadRequest(new ErrorResponse("Invalid username or password.", StatusCodes.Status400BadRequest));
         }
         User user = (await this.Db.UserRepository.FindUserByUsername(loginRequest.Username))!;
-        return Ok(new TokenResponse(this.auth.GenerateRefreshToken(user), "refresh_token"));
+        return Ok(new TokenResponse(await this.auth.GenerateRefreshToken(user), "refresh_token"));
     }
 
     [HttpPost("refreshToken/renew")]
@@ -62,7 +62,7 @@ public class AuthController: ControllerBase
         {
             return BadRequest(new ErrorResponse("Invalid refresh token.", StatusCodes.Status400BadRequest));
         }
-        return Ok(new TokenResponse(this.auth.GenerateRefreshToken(sessionUser), "refresh_token"));
+        return Ok(new TokenResponse(await this.auth.GenerateRefreshToken(sessionUser), "refresh_token"));
     }
 
     [HttpPost("accessToken")]

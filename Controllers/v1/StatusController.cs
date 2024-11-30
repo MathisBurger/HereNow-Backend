@@ -1,0 +1,60 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using PresenceBackend.Filters;
+using PresenceBackend.Models.Database;
+using PresenceBackend.Models.Response;
+using PresenceBackend.Shared;
+
+namespace PresenceBackend.Controllers.v1;
+
+[ApiController]
+[Route("v1/status")]
+[TypeFilter(typeof(AuthorizationFilter))]
+public class StatusController : AuthorizedControllerBase
+{
+    private readonly DbAccess db;
+
+    public StatusController(DbAccess db)
+    {
+        this.db = db;
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetStatus()
+    {
+        UserStatus? latest = await this.db.UserStatusRepository.GetLatestForUser(this.CurrentUser!);
+            
+        if (latest == null)
+        {
+            latest = new UserStatus();
+            latest.Id = Guid.NewGuid();
+            latest.Owner = this.CurrentUser;
+            latest.ClockIn = DateTime.UtcNow;
+        }
+
+        return Ok(latest);
+    }
+
+    [HttpPost("toggle")]
+    public async Task<IActionResult> ToggleStatus()
+    {
+        UserStatus? userStatus = await this.db.UserStatusRepository.GetLatestForUser(this.CurrentUser!);
+        if (userStatus == null || userStatus.ClockOut != null)
+        {
+            userStatus = new UserStatus();
+            userStatus.Owner = this.CurrentUser;
+            this.db.EntityManager.Add(userStatus);
+            await this.db.EntityManager.SaveChangesAsync();
+            return Ok(userStatus);
+        }
+
+        if (userStatus.ClockOut == null)
+        {
+            userStatus.ClockOut = DateTime.UtcNow;
+            this.db.EntityManager.Update(userStatus);
+            await this.db.EntityManager.SaveChangesAsync();
+            return Ok(userStatus);
+        }
+        return BadRequest(new ErrorResponse("Something went wrong", StatusCodes.Status500InternalServerError));
+    }
+}

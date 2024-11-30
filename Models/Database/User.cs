@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PresenceBackend.Models.Database;
 
@@ -16,5 +17,8 @@ public class User
     public string? RefreshToken { get; set; }
     [System.Text.Json.Serialization.JsonIgnore]
     public DateTime? RefreshTokenExpiry { get; set; }
+    
+    [InverseProperty("Owner")]
+    public IList<UserStatus> UserStatuses { get; set; } = new List<UserStatus>();
     
 }

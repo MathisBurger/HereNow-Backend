@@ -59,6 +59,44 @@ namespace PresenceBackend.Migrations
 
                     b.ToTable("Users");
                 });
+
+            modelBuilder.Entity("PresenceBackend.Models.Database.UserStatus", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ClockIn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ClockOut")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("UserStatuses");
+                });
+
+            modelBuilder.Entity("PresenceBackend.Models.Database.UserStatus", b =>
+                {
+                    b.HasOne("PresenceBackend.Models.Database.User", "Owner")
+                        .WithMany("UserStatuses")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("PresenceBackend.Models.Database.User", b =>
+                {
+                    b.Navigation("UserStatuses");
+                });
 #pragma warning restore 612, 618
         }
     }
