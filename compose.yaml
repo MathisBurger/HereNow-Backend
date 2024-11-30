@@ -1,0 +1,6 @@
+﻿services:
+  presencebackend:
+    image: presencebackend
+    build:
+      context: .
+      dockerfile: Dockerfile
