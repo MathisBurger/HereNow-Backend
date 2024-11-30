@@ -4,6 +4,7 @@ using PresenceBackend.Filters;
 using PresenceBackend.Models.Database;
 using PresenceBackend.Models.Request;
 using PresenceBackend.Models.Response;
+using PresenceBackend.Services;
 using PresenceBackend.Shared;
 
 namespace PresenceBackend.Controllers.v1;
@@ -14,10 +15,12 @@ public class AuthController: ControllerBase
 {
 
     private readonly DbAccess Db;
+    private readonly IAuthorization auth;
 
-    public AuthController(DbAccess db)
+    public AuthController(DbAccess db, IAuthorization auth)
     {
         Db = db;
+        this.auth = auth;
     }
 
     [AllowAnonymous]
@@ -31,8 +34,46 @@ public class AuthController: ControllerBase
     [RateLimitFilter(5, 10)]
     public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
     {
+        User? existingUser = await this.Db.UserRepository.FindUserByUsername(registerRequest.Username);
+        if (existingUser is not null)
+        {
+            return BadRequest(new ErrorResponse("User already exists.", StatusCodes.Status400BadRequest));
+        }
         User user = await this.Db.UserRepository.RegisterUser(registerRequest);
         return Ok(user);
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+    {
+        if (!await this.Db.UserRepository.LoginUser(loginRequest))
+        {
+            return BadRequest(new ErrorResponse("Invalid username or password.", StatusCodes.Status400BadRequest));
+        }
+        User user = (await this.Db.UserRepository.FindUserByUsername(loginRequest.Username))!;
+        return Ok(new TokenResponse(this.auth.GenerateRefreshToken(user), "refresh_token"));
+    }
+
+    [HttpPost("refreshToken/renew")]
+    public async Task<IActionResult> RenewRefreshToken([FromBody] TokenRequest tokenRequest)
+    {
+        User? sessionUser = await this.auth.ValidateRefreshToken(tokenRequest.Token);
+        if (sessionUser is null)
+        {
+            return BadRequest(new ErrorResponse("Invalid refresh token.", StatusCodes.Status400BadRequest));
+        }
+        return Ok(new TokenResponse(this.auth.GenerateRefreshToken(sessionUser), "refresh_token"));
+    }
+
+    [HttpPost("accessToken")]
+    public async Task<IActionResult> GetAccessToken([FromBody] TokenRequest tokenRequest)
+    {
+        User? sessionUser = await this.auth.ValidateRefreshToken(tokenRequest.Token);
+        if (sessionUser is null)
+        {
+            return BadRequest(new ErrorResponse("Invalid refresh token.", StatusCodes.Status400BadRequest));
+        }
+        return Ok(new TokenResponse(this.auth.GenerateAccessToken(sessionUser), "access_token"));
     }
     
 }

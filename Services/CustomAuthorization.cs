@@ -36,7 +36,7 @@ public class CustomAuthorization : IAuthorization
 
     public string GenerateRefreshToken(User claims)
     {
-        claims.RefreshToken = RandomNumberGenerator.GetBytes(256).ToString();
+        claims.RefreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(256));
         claims.RefreshTokenExpiry = DateTime.UtcNow.Add(Constants.RefreshTokenSessionDuration);
         this.Db.EntityManager.Update(claims);
         return claims.RefreshToken!;
