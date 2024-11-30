@@ -22,6 +22,8 @@ public class UserRepository : IRepository<User>
         var user = new User();
         user.Username = request.Username;
         user.Password = hasher.HashPassword(user, request.Password);
+        user.FirstName = request.FirstName;
+        user.LastName = request.LastName;
         ctx.Add(user);
         await ctx.SaveChangesAsync();
         return user;
@@ -42,6 +44,13 @@ public class UserRepository : IRepository<User>
     {
         return await ctx.Users
             .Where(u => u.Username == username)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<User?> FindByRefreshToken(string token)
+    {
+        return await ctx.Users
+            .Where(u => u.RefreshToken == token)
             .FirstOrDefaultAsync();
     }
 

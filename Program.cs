@@ -1,4 +1,9 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using PresenceBackend.Models.Database;
+using PresenceBackend.Modules;
+using PresenceBackend.Services;
 using PresenceBackend.Shared;
 
 namespace PresenceBackend;
@@ -9,15 +14,28 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.Services.AddSingleton<IPasswordHasher<User>, BcryptHasher>();
+        
         // Add services to the container.
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                                throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-        builder.Services.AddDbContext<DatabaseContext>(options =>
+        builder.Services.AddDbContext<IContext, DatabaseContext>(options =>
             options.UseSqlServer(connectionString));
+        builder.Services.AddScoped<DbAccess>();
+        builder.Services.AddScoped<IAuthorization, CustomAuthorization>();
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-        builder.Services.AddControllers();
+
+        builder.Services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Presence Backend",
+                Version = "v1",
+                Description = "The complete backend for presence"
+            });
+        });
         
-        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddControllers();
 
         var app = builder.Build();
 
@@ -27,14 +45,13 @@ public class Program
             app.UseMigrationsEndPoint();
             app.UseDeveloperExceptionPage();
         }
+
+        app.UseSwagger();
+        app.UseSwaggerUI();
         
         app.UseRouting();
         app.UseAuthorization();
         app.UseEndpoints(endpoints => endpoints.MapControllers());
-        
-        //using (var serviceScope = app.Services.CreateScope())
-        //    using (var context = serviceScope.ServiceProvider.GetRequiredService<DatabaseContext>()!)
-        //        context.Database.Migrate();
         
         app.Run();
     }

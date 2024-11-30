@@ -12,6 +12,6 @@ public class DefaultController
     [HttpGet("/")]
     public IActionResult Default()
     {
-        return new OkObjectResult(new DefaultResponseModel("OK", "Backend service is up and running", "v1.0.0"));
+        return new OkObjectResult(new DefaultResponseModel("RUNNING", "Backend service is up and running", "v1.0.0"));
     }
 }

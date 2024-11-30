@@ -23,4 +23,18 @@ public class DatabaseContext : DbContext, IContext
         
         base.OnConfiguring(optionsBuilder);
     }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<User>()
+            .HasKey(e => e.Id);
+        modelBuilder.Entity<User>()
+            .HasIndex(e => e.Username)
+            .IsUnique();
+        modelBuilder.Entity<User>()
+            .HasIndex(e => e.RefreshToken)
+            .IsUnique();
+        
+        base.OnModelCreating(modelBuilder);
+    }
 }
