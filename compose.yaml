@@ -4,3 +4,8 @@
     build:
       context: .
       dockerfile: Dockerfile
+  db: 
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      MSSQL_SA_PASSWORD: supersecure123#A
+      ACCEPT_EULA: Y
