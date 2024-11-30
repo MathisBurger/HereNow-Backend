@@ -75,5 +75,19 @@ public class AuthController: ControllerBase
         }
         return Ok(new TokenResponse(this.auth.GenerateAccessToken(sessionUser), "access_token"));
     }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout([FromQuery] TokenRequest tokenRequest)
+    {
+        User? sessionUser = await this.auth.ValidateRefreshToken(tokenRequest.Token);
+        if (sessionUser is null)
+        {
+            return BadRequest(new ErrorResponse("Invalid refresh token.", StatusCodes.Status400BadRequest));
+        }
+        sessionUser.RefreshToken = null;
+        this.Db.EntityManager.Update(sessionUser);
+        await this.Db.EntityManager.SaveChangesAsync();
+        return Ok();
+    }
     
 }
