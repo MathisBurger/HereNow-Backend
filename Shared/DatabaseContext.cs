@@ -35,6 +35,9 @@ public class DatabaseContext : DbContext, IContext
         modelBuilder.Entity<User>()
             .HasIndex(e => e.RefreshToken)
             .IsUnique();
+        modelBuilder.Entity<User>()
+            .HasIndex(e => e.Email)
+            .IsUnique();
         
         base.OnModelCreating(modelBuilder);
     }

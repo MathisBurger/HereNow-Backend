@@ -28,6 +28,10 @@ namespace PresenceBackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
 
@@ -44,11 +48,18 @@ namespace PresenceBackend.Migrations
                     b.Property<DateTime?>("RefreshTokenExpiry")
                         .HasColumnType("datetime2");
 
+                    b.PrimitiveCollection<string>("UserRoles")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.HasIndex("RefreshToken")
                         .IsUnique()
@@ -66,13 +77,13 @@ namespace PresenceBackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ClockIn")
+                    b.Property<DateTime?>("ClockIn")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("ClockOut")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("OwnerId")
+                    b.Property<Guid?>("OwnerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -86,9 +97,7 @@ namespace PresenceBackend.Migrations
                 {
                     b.HasOne("PresenceBackend.Models.Database.User", "Owner")
                         .WithMany("UserStatuses")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OwnerId");
 
                     b.Navigation("Owner");
                 });
