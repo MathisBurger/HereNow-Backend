@@ -8,7 +8,6 @@ public class Protocol
     [Key]
     public Guid Id { get; set; }
     
-    [InverseProperty("CreatedProtocols")]
     public required User? Creator { get; set; }
     
     public required ProtocolAction Action { get; set; }

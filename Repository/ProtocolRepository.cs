@@ -21,6 +21,9 @@ public class ProtocolRepository : IRepository<Protocol>
 
     public async Task<List<Protocol>> FindAll(ProtocolAction action)
     {
-        return await this._db.Protocols.Where(e => e.Action == action).ToListAsync();
+        return await this._db.Protocols
+            .Where(e => e.Action == action)
+            .Include(e => e.InvolvedUsers)
+            .ToListAsync();
     }
 }

@@ -29,6 +29,5 @@ public class User
     [InverseProperty("InvolvedUsers")]
     public IList<Protocol> InvolvedIn { get; set; } = new List<Protocol>();
     
-    [InverseProperty("Creator")]
     public IList<Protocol> CreatedProtocols { get; set; } = new List<Protocol>(); 
 }

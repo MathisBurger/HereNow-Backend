@@ -161,13 +161,13 @@ namespace PresenceBackend.Migrations
                     b.HasOne("PresenceBackend.Models.Database.Protocol", null)
                         .WithMany()
                         .HasForeignKey("InvolvedInId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("PresenceBackend.Models.Database.User", null)
                         .WithMany()
                         .HasForeignKey("InvolvedUsersId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
