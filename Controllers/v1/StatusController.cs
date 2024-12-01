@@ -22,6 +22,10 @@ public class StatusController : AuthorizedControllerBase
     [HttpGet]
     public async Task<IActionResult> GetStatus()
     {
+        if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Member))
+        {
+            return Unauthorized();
+        }
         UserStatus? latest = await this.db.UserStatusRepository.GetLatestForUser(this.CurrentUser!);
             
         if (latest == null)
@@ -38,6 +42,11 @@ public class StatusController : AuthorizedControllerBase
     [HttpPost("toggle")]
     public async Task<IActionResult> ToggleStatus()
     {
+        if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Member))
+        {
+            return Unauthorized();
+        }
+        
         UserStatus? userStatus = await this.db.UserStatusRepository.GetLatestForUser(this.CurrentUser!);
         if (userStatus == null || userStatus.ClockOut != null)
         {

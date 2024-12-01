@@ -20,9 +20,9 @@ public class AdminController : AuthorizedControllerBase
     }
 
     [HttpPost("elevate/admin")]
-    public async Task<IActionResult> ElevateToAdmin([FromBody] ElevateRequest request)
+    public async Task<IActionResult> ElevateToAdmin([FromBody] UserRequest request)
     {
-        if (this.CurrentUser == null || this.CurrentUser.UserRoles.Contains(UserRole.Admin))
+        if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
             return Unauthorized();
         }
@@ -43,9 +43,9 @@ public class AdminController : AuthorizedControllerBase
     }
     
     [HttpPost("elevate/keyUser")]
-    public async Task<IActionResult> ElevateToKeyUser([FromBody] ElevateRequest request)
+    public async Task<IActionResult> ElevateToKeyUser([FromBody] UserRequest request)
     {
-        if (this.CurrentUser == null || this.CurrentUser.UserRoles.Contains(UserRole.Admin))
+        if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
             return Unauthorized();
         }
@@ -66,9 +66,9 @@ public class AdminController : AuthorizedControllerBase
     }
     
     [HttpPost("elevate/observer")]
-    public async Task<IActionResult> ElevateToObserver([FromBody] ElevateRequest request)
+    public async Task<IActionResult> ElevateToObserver([FromBody] UserRequest request)
     {
-        if (this.CurrentUser == null || this.CurrentUser.UserRoles.Contains(UserRole.Admin))
+        if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
             return Unauthorized();
         }
@@ -89,9 +89,9 @@ public class AdminController : AuthorizedControllerBase
     }
     
     [HttpPost("elevate/member")]
-    public async Task<IActionResult> ElevateToMember([FromBody] ElevateRequest request)
+    public async Task<IActionResult> ElevateToMember([FromBody] UserRequest request)
     {
-        if (this.CurrentUser == null || this.CurrentUser.UserRoles.Contains(UserRole.Admin))
+        if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
             return Unauthorized();
         }
@@ -111,10 +111,10 @@ public class AdminController : AuthorizedControllerBase
         return Ok(user);
     }
     
-    [HttpPost("revoke/admin")]
-    public async Task<IActionResult> RevokeAdmin([FromBody] ElevateRequest request)
+    [HttpDelete("revoke/admin")]
+    public async Task<IActionResult> RevokeAdmin([FromBody] UserRequest request)
     {
-        if (this.CurrentUser == null || this.CurrentUser.UserRoles.Contains(UserRole.Admin))
+        if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
             return Unauthorized();
         }
@@ -134,10 +134,10 @@ public class AdminController : AuthorizedControllerBase
         return Ok(user);
     }
     
-    [HttpPost("revoke/keyUser")]
-    public async Task<IActionResult> RevokeKeyUser([FromBody] ElevateRequest request)
+    [HttpDelete("revoke/keyUser")]
+    public async Task<IActionResult> RevokeKeyUser([FromBody] UserRequest request)
     {
-        if (this.CurrentUser == null || this.CurrentUser.UserRoles.Contains(UserRole.Admin))
+        if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
             return Unauthorized();
         }
@@ -157,10 +157,10 @@ public class AdminController : AuthorizedControllerBase
         return Ok(user);
     }
     
-    [HttpPost("revoke/observer")]
-    public async Task<IActionResult> RevokeObserver([FromBody] ElevateRequest request)
+    [HttpDelete("revoke/observer")]
+    public async Task<IActionResult> RevokeObserver([FromBody] UserRequest request)
     {
-        if (this.CurrentUser == null || this.CurrentUser.UserRoles.Contains(UserRole.Admin))
+        if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
             return Unauthorized();
         }
@@ -180,10 +180,10 @@ public class AdminController : AuthorizedControllerBase
         return Ok(user);
     }
     
-    [HttpPost("revoke/member")]
-    public async Task<IActionResult> RevokeMember([FromBody] ElevateRequest request)
+    [HttpDelete("revoke/member")]
+    public async Task<IActionResult> RevokeMember([FromBody] UserRequest request)
     {
-        if (this.CurrentUser == null || this.CurrentUser.UserRoles.Contains(UserRole.Admin))
+        if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
             return Unauthorized();
         }
@@ -201,5 +201,24 @@ public class AdminController : AuthorizedControllerBase
             await this._db.EntityManager.SaveChangesAsync();
         }
         return Ok(user);
+    }
+    
+    [HttpDelete("deleteUser")]
+    public async Task<IActionResult> DeleteUser([FromBody] UserRequest request)
+    {
+        if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
+        {
+            return Unauthorized();
+        }
+        
+        User? user = await this._db.UserRepository.FindOneById(request.UserId);
+        if (user == null)
+        {
+            return BadRequest();
+        }
+
+        this._db.EntityManager.Remove(user);
+        await this._db.EntityManager.SaveChangesAsync();
+        return Ok();
     }
 }

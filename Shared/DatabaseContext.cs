@@ -39,6 +39,11 @@ public class DatabaseContext : DbContext, IContext
         modelBuilder.Entity<User>()
             .HasIndex(e => e.Email)
             .IsUnique();
+        
+        modelBuilder.Entity<User>()
+            .HasMany<Protocol>(e => e.CreatedProtocols)
+            .WithOne(e => e.Creator)
+            .OnDelete(DeleteBehavior.SetNull);
 
         modelBuilder.Entity<Protocol>()
             .HasMany<User>(e => e.InvolvedUsers)
@@ -48,6 +53,11 @@ public class DatabaseContext : DbContext, IContext
                 j => j.HasOne<User>().WithMany().OnDelete(DeleteBehavior.NoAction),
                 j => j.HasOne<Protocol>().WithMany().OnDelete(DeleteBehavior.Cascade)
             );
+        
+        modelBuilder.Entity<UserStatus>()
+            .HasOne<User>(e => e.Owner)
+            .WithMany()
+            .OnDelete(DeleteBehavior.Cascade);
         base.OnModelCreating(modelBuilder);
     }
 }
