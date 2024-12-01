@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using PresenceBackend.Models.Database;
 using PresenceBackend.Models.Request;
 using PresenceBackend.Shared;
@@ -57,5 +58,23 @@ public class UserRepository : IRepository<User>
     public async Task<User?> FindOneById(Guid id)
     {
         return await ctx.Users.FindAsync(id);
+    }
+
+    public async Task<List<User>> FindCurrentClockedIn()
+    {
+        return await ctx.Users
+            .GroupJoin(
+                ctx.UserStatuses,
+                user => user,
+                status => status.Owner,
+                (user, userStatusGroup) => new {user, userStatusGroup}
+            )
+            .SelectMany(
+                x => x.userStatusGroup.DefaultIfEmpty(),
+                (x, status) => new { x.user, status }
+            )
+            .Where(x => x.status != null && x.status.ClockOut == null)
+            .Select(x => x.user)
+            .ToListAsync();
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -21,8 +22,13 @@ public class User
     public UserRole[] UserRoles { get; set; } = [UserRole.Member];
 
     public string Email { get; set; } = "demo@rathje-vt.de";
-    
-    [InverseProperty("Owner")]
+
+    [InverseProperty("Owner")] 
     public IList<UserStatus> UserStatuses { get; set; } = new List<UserStatus>();
+
+    [InverseProperty("InvolvedUsers")]
+    public IList<Protocol> InvolvedIn { get; set; } = new List<Protocol>();
     
+    [InverseProperty("Creator")]
+    public IList<Protocol> CreatedProtocols { get; set; } = new List<Protocol>(); 
 }

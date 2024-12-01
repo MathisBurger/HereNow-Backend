@@ -2,5 +2,5 @@ namespace PresenceBackend.Repository;
 
 public interface IRepository<T>
 {
-    Task<T> FindOneById(Guid id);
+    Task<T?> FindOneById(Guid id);
 }

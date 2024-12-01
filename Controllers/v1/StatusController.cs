@@ -42,6 +42,7 @@ public class StatusController : AuthorizedControllerBase
         if (userStatus == null || userStatus.ClockOut != null)
         {
             userStatus = new UserStatus();
+            userStatus.ClockIn = DateTime.UtcNow;
             userStatus.Owner = this.CurrentUser;
             this.db.EntityManager.Add(userStatus);
             await this.db.EntityManager.SaveChangesAsync();

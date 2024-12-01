@@ -10,6 +10,7 @@ public class DatabaseContext : DbContext, IContext
     
     public DbSet<User> Users { get; set; }
     public DbSet<UserStatus> UserStatuses { get; set; }
+    public DbSet<Protocol> Protocols { get; set; }
 
     public DatabaseContext(IConfiguration configuration)
     {
@@ -38,7 +39,15 @@ public class DatabaseContext : DbContext, IContext
         modelBuilder.Entity<User>()
             .HasIndex(e => e.Email)
             .IsUnique();
-        
+
+        modelBuilder.Entity<Protocol>()
+            .HasMany<User>(e => e.InvolvedUsers)
+            .WithMany(u => u.InvolvedIn)
+            .UsingEntity<Dictionary<string, object>>(
+                "ProtocolUsers",
+                j => j.HasOne<User>().WithMany().OnDelete(DeleteBehavior.NoAction),
+                j => j.HasOne<Protocol>().WithMany().OnDelete(DeleteBehavior.Cascade)
+            );
         base.OnModelCreating(modelBuilder);
     }
 }
