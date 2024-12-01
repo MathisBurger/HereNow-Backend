@@ -19,7 +19,7 @@ public class User
     [System.Text.Json.Serialization.JsonIgnore]
     public DateTime? RefreshTokenExpiry { get; set; }
     
-    public UserRole[] UserRoles { get; set; } = [UserRole.Member];
+    public IList<UserRole> UserRoles { get; set; } = new List<UserRole>();
 
     public string Email { get; set; } = "demo@rathje-vt.de";
 
