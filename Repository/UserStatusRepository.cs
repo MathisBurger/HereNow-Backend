@@ -26,4 +26,9 @@ public class UserStatusRepository : IRepository<UserStatus>
             .Where(e => e.Owner.Id == user.Id)
             .FirstOrDefaultAsync();
     }
+
+    public async Task<List<UserStatus>> GetAllLoggedIn()
+    {
+        return await this.ctx.UserStatuses.Where(e => e.ClockOut == null).ToListAsync();
+    }
 }
