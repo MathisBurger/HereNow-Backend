@@ -77,4 +77,9 @@ public class UserRepository : IRepository<User>
             .Select(x => x.user)
             .ToListAsync();
     }
+
+    public async Task<List<User>> FindAll()
+    {
+        return await this.ctx.Users.ToListAsync();
+    }
 }
