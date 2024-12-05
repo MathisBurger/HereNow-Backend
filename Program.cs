@@ -30,6 +30,8 @@ public class Program
         builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
         builder.Services.AddTransient<MailService>();
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+        
+        builder.Services.AddCors(options => options.AddPolicy("AllowAllOrigins", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
         builder.Services.AddSwaggerGen(c =>
         {
@@ -53,6 +55,7 @@ public class Program
 
         app.UseSwagger();
         app.UseSwaggerUI();
+        app.UseCors("AllowAllOrigins");
         
         app.UseRouting();
         app.UseAuthorization();
