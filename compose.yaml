@@ -1,14 +1,14 @@
-﻿version: '3.8'
-
-services:
-  presencebackend:
-    image: presencebackend
-    build:
-      context: .
-      dockerfile: Dockerfile
+﻿services:
+  presence-backend:
+    image: ghcr.io/mathisburger/herenow-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./appsettings.json:/app/appsettings.json
 
   db:
     image: mcr.microsoft.com/mssql/server:2019-latest
+    platform: linux/amd64
     environment:
       MSSQL_SA_PASSWORD: supersecure123#A
       ACCEPT_EULA: Y

@@ -1,20 +1,20 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
-USER $APP_UID
+﻿# Base image with runtime only
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+# Build image with SDK
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
+
 WORKDIR /src
 COPY ["PresenceBackend.csproj", "./"]
 RUN dotnet restore "PresenceBackend.csproj"
 COPY . .
-WORKDIR "/src/"
 RUN dotnet build "PresenceBackend.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "PresenceBackend.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final

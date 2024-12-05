@@ -87,6 +87,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="app\" />
       <Folder Include="Migrations\" />
     </ItemGroup>
 
