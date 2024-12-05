@@ -26,8 +26,8 @@ public class CustomAuthorization : IAuthorization
     public CustomAuthorization(DbAccess db)
     {
         this.Db = db;
-        //this.jwtSignKey = RandomNumberGenerator.GetBytes(2048);
-        this.jwtSignKey = new byte[] {0x12};
+        this.jwtSignKey = RandomNumberGenerator.GetBytes(2048);
+        //this.jwtSignKey = new byte[] {0x12};
     }
     
     public string GenerateAccessToken(User claims) => 
