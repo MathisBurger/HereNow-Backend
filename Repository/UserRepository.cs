@@ -77,6 +77,7 @@ public class UserRepository : IRepository<User>
             )
             .Where(x => x.status != null && x.status.ClockOut == null)
             .Select(x => x.user)
+            .Include(x => x.UserStatuses.First())
             .ToListAsync();
     }
 

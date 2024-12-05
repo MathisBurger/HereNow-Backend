@@ -27,6 +27,17 @@ public class ProtocolController : AuthorizedControllerBase
 
         return Ok(await this._db.ProtocolRepository.FindAll(ProtocolAction.Emergency));
     }
+    
+    [HttpGet("emergencies/{id}")]
+    public async Task<IActionResult> GetEmergency(Guid id)
+    {
+        if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
+        {
+            return Unauthorized();
+        }
+
+        return Ok(await this._db.ProtocolRepository.FindOneById(id));
+    }
 
     [HttpPost("emergencies")]
     public async Task<IActionResult> CreateEmergency()
