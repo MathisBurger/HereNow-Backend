@@ -21,7 +21,7 @@ public class User
     
     public IList<UserRole> UserRoles { get; set; } = new List<UserRole>();
 
-    public string Email { get; set; } = "demo@rathje-vt.de";
+    public string Email { get; set; }
 
     [InverseProperty("Owner")] 
     public IList<UserStatus> UserStatuses { get; set; } = new List<UserStatus>();

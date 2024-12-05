@@ -11,7 +11,7 @@ namespace PresenceBackend.Controllers.v1;
 
 [Route("v1/auth")]
 [ApiController]
-public class AuthController: ControllerBase
+public class AuthController: AuthorizedControllerBase
 {
 
     private readonly DbAccess Db;
@@ -30,10 +30,15 @@ public class AuthController: ControllerBase
         return new OkObjectResult(new DefaultResponseModel("OK", "v1 authorization is enabled", "v1.0.0"));
     }
 
+    [TypeFilter(typeof(AuthorizationFilter))]
     [HttpPost("register")]
-    [RateLimitFilter(5, 10)]
     public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
     {
+        if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
+        {
+            return Unauthorized();
+        }
+        
         User? existingUser = await this.Db.UserRepository.FindUserByUsername(registerRequest.Username);
         if (existingUser is not null)
         {

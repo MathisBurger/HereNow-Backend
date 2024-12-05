@@ -121,6 +121,11 @@ public class AdminController : AuthorizedControllerBase
         {
             return Unauthorized();
         }
+
+        if (request.UserId == this.CurrentUser.Id)
+        {
+            return BadRequest("You cannot revoke admin privileges on your own account");
+        }
         
         User? user = await this._db.UserRepository.FindOneById(request.UserId);
         if (user == null)

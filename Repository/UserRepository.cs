@@ -25,6 +25,8 @@ public class UserRepository : IRepository<User>
         user.Password = hasher.HashPassword(user, request.Password);
         user.FirstName = request.FirstName;
         user.LastName = request.LastName;
+        user.Email = request.Email;
+        user.UserRoles = new List<UserRole>() { UserRole.Member };
         ctx.Add(user);
         await ctx.SaveChangesAsync();
         return user;
