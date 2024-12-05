@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PresenceBackend.Filters;
 using PresenceBackend.Models.Database;
+using PresenceBackend.Services;
 using PresenceBackend.Shared;
 
 namespace PresenceBackend.Controllers.v1;
@@ -15,10 +16,12 @@ public class PresenceController : AuthorizedControllerBase
 {
 
     private readonly DbAccess _db;
+    private readonly MailService _mailService;
 
-    public PresenceController(DbAccess db)
+    public PresenceController(DbAccess db, MailService mailService)
     {
         _db = db;
+        _mailService = mailService;
     }
 
     /// <summary>
@@ -64,6 +67,11 @@ public class PresenceController : AuthorizedControllerBase
             protocol.InvolvedUsers = statusList.Select(s => s.Owner!).ToList();
             this._db.EntityManager.Add(protocol);
             await this._db.EntityManager.SaveChangesAsync();
+            
+            foreach (var admin in await this._db.UserRepository.FindAllAdmins())
+            {
+                this._mailService.SendEmailAsync(admin.Email, "Alle Nutzer abgemeldet", $"Es wurden alle Nutzer abgemeldet. Zeitpunkt: {DateTime.Now}");
+            }
             
             return Ok(protocol);
         }

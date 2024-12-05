@@ -290,7 +290,7 @@ public class AdminController : AuthorizedControllerBase
             return Unauthorized("Du bist kein Administrator");
         }
 
-        return Ok(this._db.UserRepository.FindAll());
+        return Ok(await this._db.UserRepository.FindAll());
     }
 
     /// <summary>

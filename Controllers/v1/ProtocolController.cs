@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PresenceBackend.Filters;
 using PresenceBackend.Models.Database;
+using PresenceBackend.Services;
 using PresenceBackend.Shared;
 
 namespace PresenceBackend.Controllers.v1;
@@ -14,10 +15,12 @@ namespace PresenceBackend.Controllers.v1;
 public class ProtocolController : AuthorizedControllerBase
 {
     private readonly DbAccess _db;
+    private readonly MailService _mailService;
 
-    public ProtocolController(DbAccess db)
+    public ProtocolController(DbAccess db, MailService mailService)
     {
         _db = db;
+        _mailService = mailService;
     }
     
     /// <summary>
@@ -67,6 +70,12 @@ public class ProtocolController : AuthorizedControllerBase
         protocol.InvolvedUsers = await this._db.UserRepository.FindCurrentClockedIn();
         this._db.EntityManager.Add(protocol);
         await this._db.EntityManager.SaveChangesAsync();
+
+        foreach (var admin in await this._db.UserRepository.FindAllAdmins())
+        {
+            this._mailService.SendEmailAsync(admin.Email, "Notfall angelegt",
+                $"Es wurde ein Notfall mit {protocol.InvolvedUsers.Count()} Nutzern erstellt. Zeitpunkt: {DateTime.Now}");
+        }
         return Ok(protocol);
     }
 }

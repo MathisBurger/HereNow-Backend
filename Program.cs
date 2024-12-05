@@ -11,7 +11,7 @@ namespace PresenceBackend;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +27,8 @@ public class Program
             options.UseSqlServer(connectionString));
         builder.Services.AddScoped<DbAccess>();
         builder.Services.AddScoped<IAuthorization, CustomAuthorization>();
+        builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
+        builder.Services.AddTransient<MailService>();
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
         builder.Services.AddSwaggerGen(c =>
@@ -47,7 +49,6 @@ public class Program
         if (app.Environment.IsDevelopment())
         {
             app.UseMigrationsEndPoint();
-            app.UseDeveloperExceptionPage();
         }
 
         app.UseSwagger();
@@ -62,7 +63,22 @@ public class Program
             using (var scope = app.Services.CreateScope())
             using (var db = scope.ServiceProvider.GetService<IContext>()!)
             {
+                db.Database.EnsureCreated();
                 db.Database.Migrate();
+                if (await db.Users.CountAsync() == 0)
+                {
+                    Console.WriteLine("No Users Found");
+                    var user = new User();
+                    user.Username = "admin";
+                    user.Email = "admin@rathje-vt.de";
+                    user.UserRoles = new List<UserRole>() { UserRole.Admin };
+                    user.FirstName = "Rathje";
+                    user.LastName = "VT";
+                    user.Password = scope.ServiceProvider.GetService<IPasswordHasher<User>>()
+                        .HashPassword(user, "Admin123");
+                    db.Users.Add(user);
+                    await db.SaveChangesAsync();
+                }
             }
         }
         catch (Exception ex)

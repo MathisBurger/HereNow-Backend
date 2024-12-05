@@ -96,7 +96,7 @@ public class UserRepository : IRepository<User>
     /// <returns></returns>
     public async Task<List<User>> FindCurrentClockedIn()
     {
-        return await ctx.Users
+        var users =  await ctx.Users
             .GroupJoin(
                 ctx.UserStatuses,
                 user => user,
@@ -109,8 +109,17 @@ public class UserRepository : IRepository<User>
             )
             .Where(x => x.status != null && x.status.ClockOut == null)
             .Select(x => x.user)
-            .Include(x => x.UserStatuses.First())
             .ToListAsync();
+        
+        List<User> newList = new List<User>();
+        foreach (var user in users)
+        {
+            var currentStatus = await this.ctx.UserStatuses.OrderByDescending(e => e.ClockIn)
+                .Where(e => e.Owner.Id == user.Id).FirstAsync();
+            user.UserStatuses = new List<UserStatus>() {currentStatus};
+            newList.Add(user);
+        }
+        return newList;
     }
 
     /// <summary>
@@ -120,5 +129,14 @@ public class UserRepository : IRepository<User>
     public async Task<List<User>> FindAll()
     {
         return await this.ctx.Users.ToListAsync();
+    }
+
+    /// <summary>
+    /// Finds all admins
+    /// </summary>
+    /// <returns></returns>
+    public async Task<List<User>> FindAllAdmins()
+    {
+        return await ctx.Users.Where(u => u.UserRoles.Contains(UserRole.Admin)).ToListAsync();
     }
 }
