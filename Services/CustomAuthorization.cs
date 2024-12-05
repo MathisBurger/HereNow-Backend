@@ -14,20 +14,15 @@ namespace PresenceBackend.Services;
 /// </summary>
 public class CustomAuthorization : IAuthorization
 {
-    private readonly byte[] jwtSignKey;
 
     private readonly DbAccess Db;
+    private readonly JwtBuilder JwtBuilder;
 
-    private JwtBuilder JwtBuilder
-    {
-        get => new JwtBuilder().WithSecret(jwtSignKey).WithAlgorithm(new HMACSHA256Algorithm());
-    }
-
-    public CustomAuthorization(DbAccess db)
+    public CustomAuthorization(DbAccess db, IConfiguration configuration)
     {
         this.Db = db;
-        this.jwtSignKey = RandomNumberGenerator.GetBytes(2048);
-        //this.jwtSignKey = new byte[] {0x12};
+        var jwtSignKey = Encoding.UTF8.GetBytes(configuration.GetValue<string>("jwtKey")!);
+        this.JwtBuilder = new JwtBuilder().WithSecret(jwtSignKey).WithAlgorithm(new HMACSHA256Algorithm());
     }
     
     public string GenerateAccessToken(User claims) => 
