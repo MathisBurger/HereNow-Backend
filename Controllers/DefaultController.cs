@@ -4,10 +4,17 @@ using PresenceBackend.Models.Response;
 
 namespace PresenceBackend.Controllers;
 
+/// <summary>
+/// Default controller
+/// </summary>
 [ApiController]
 public class DefaultController
 {
     
+    /// <summary>
+    /// Gets the default response
+    /// </summary>
+    /// <returns></returns>
     [AllowAnonymous]
     [HttpGet("/")]
     public IActionResult Default()

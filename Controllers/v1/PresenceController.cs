@@ -5,6 +5,9 @@ using PresenceBackend.Shared;
 
 namespace PresenceBackend.Controllers.v1;
 
+/// <summary>
+/// Controller for handlung presences
+/// </summary>
 [ApiController]
 [Route("v1/presence")]
 [TypeFilter(typeof(AuthorizationFilter))]
@@ -18,6 +21,10 @@ public class PresenceController : AuthorizedControllerBase
         _db = db;
     }
 
+    /// <summary>
+    /// Gets all active users
+    /// </summary>
+    /// <returns>All active users</returns>
     [HttpGet]
     public async Task<IActionResult> GetAllActiveUsers()
     {
@@ -30,6 +37,10 @@ public class PresenceController : AuthorizedControllerBase
         return Unauthorized("Du hast keine Rechte");
     }
 
+    /// <summary>
+    /// Logs out all users
+    /// </summary>
+    /// <returns>Ok result</returns>
     [HttpPost("logoutAll")]
     public async Task<IActionResult> LogoutAllActiveUsers()
     {

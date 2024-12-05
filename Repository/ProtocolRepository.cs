@@ -4,6 +4,9 @@ using PresenceBackend.Shared;
 
 namespace PresenceBackend.Repository;
 
+/// <summary>
+/// Protocol repository
+/// </summary>
 public class ProtocolRepository : IRepository<Protocol>
 {
 
@@ -14,11 +17,21 @@ public class ProtocolRepository : IRepository<Protocol>
         _db = db;
     }
     
+    /// <summary>
+    /// Finds one by ID
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public async Task<Protocol?> FindOneById(Guid id)
     {
         return await this._db.Protocols.FindAsync(id);
     }
 
+    /// <summary>
+    /// Finds all
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns></returns>
     public async Task<List<Protocol>> FindAll(ProtocolAction action)
     {
         return await this._db.Protocols

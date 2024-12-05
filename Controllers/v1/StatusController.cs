@@ -7,6 +7,9 @@ using PresenceBackend.Shared;
 
 namespace PresenceBackend.Controllers.v1;
 
+/// <summary>
+/// Controller handling status related actions
+/// </summary>
 [ApiController]
 [Route("v1/status")]
 [TypeFilter(typeof(AuthorizationFilter))]
@@ -19,6 +22,10 @@ public class StatusController : AuthorizedControllerBase
         this.db = db;
     }
     
+    /// <summary>
+    /// Gets the current user status
+    /// </summary>
+    /// <returns>The status</returns>
     [HttpGet]
     public async Task<IActionResult> GetStatus()
     {
@@ -39,6 +46,10 @@ public class StatusController : AuthorizedControllerBase
         return Ok(latest);
     }
 
+    /// <summary>
+    /// Toggles the current user status
+    /// </summary>
+    /// <returns></returns>
     [HttpPost("toggle")]
     public async Task<IActionResult> ToggleStatus()
     {

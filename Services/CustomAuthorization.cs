@@ -9,6 +9,9 @@ using PresenceBackend.Shared;
 
 namespace PresenceBackend.Services;
 
+/// <summary>
+/// Custom auth implementation
+/// </summary>
 public class CustomAuthorization : IAuthorization
 {
     private readonly byte[] jwtSignKey;
@@ -26,7 +29,7 @@ public class CustomAuthorization : IAuthorization
         //this.jwtSignKey = RandomNumberGenerator.GetBytes(2048);
         this.jwtSignKey = new byte[] {0x12};
     }
-
+    
     public string GenerateAccessToken(User claims) => 
         JwtBuilder
             .AddClaim("uid", claims.Id)

@@ -5,6 +5,9 @@ using PresenceBackend.Shared;
 
 namespace PresenceBackend.Filters;
 
+/// <summary>
+/// Filter for handling auth 
+/// </summary>
 public class AuthorizationFilter : ActionFilterAttribute
 {
 

@@ -4,6 +4,9 @@ using PresenceBackend.Repository;
 
 namespace PresenceBackend.Shared;
 
+/// <summary>
+/// DbAccess implementation
+/// </summary>
 public class DbAccess
 {
     public readonly IContext EntityManager;

@@ -8,6 +8,9 @@ using PresenceBackend.Shared;
 
 namespace PresenceBackend.Controllers.v1;
 
+/// <summary>
+/// Controller handling user related actions.
+/// </summary>
 [ApiController]
 [TypeFilter(typeof(AuthorizationFilter))]
 [Route("v1/users")]
@@ -23,7 +26,11 @@ public class UserController : AuthorizedControllerBase
         _passwordHasher = passwordHasher;
     }
 
-    
+
+    /// <summary>
+    ///  Gets all users
+    /// </summary>
+    /// <returns>All users</returns>
     [HttpGet]
     public async Task<IActionResult> GetUsers()
     {
@@ -35,6 +42,11 @@ public class UserController : AuthorizedControllerBase
         return Ok(await this._db.UserRepository.FindAll());
     }
 
+    /// <summary>
+    /// Gets a specific user
+    /// </summary>
+    /// <param name="id">The ID of the user</param>
+    /// <returns>The ID</returns>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUser(Guid id)
     {
@@ -46,21 +58,29 @@ public class UserController : AuthorizedControllerBase
         return Ok(await this._db.UserRepository.FindOneById(id));
     }
 
+    /// <summary>
+    /// Gets yourself as user
+    /// </summary>
+    /// <returns>The current user</returns>
     [HttpGet("self")]
     public IActionResult Self()
     {
         return Ok(this.CurrentUser);
     }
     
+    /// <summary>
+    /// Resets the user password
+    /// </summary>
+    /// <param name="request">The new password</param>
+    /// <returns>The updated user</returns>
     [HttpPost("self/newPassword")]
-    public async Task<IActionResult> ResetPassword(Guid id, [FromBody] NewPasswordRequest request)
+    public async Task<IActionResult> ResetPassword([FromBody] NewPasswordRequest request)
     {
-        if (this.CurrentUser == null || this.CurrentUser.Id == id)
+        if (this.CurrentUser == null)
         {
-            return Unauthorized("Du kannst nur dein eigenes Passwort zurücksetzen");
+            return Unauthorized("Du bist nicht angemeldet");
         }
-        
-        User? user = await this._db.UserRepository.FindOneById(id);
+        User? user = await this._db.UserRepository.FindOneById(this.CurrentUser.Id);
         if (user == null)
         {
             return BadRequest("Nutzer konnte nicht gefunden werden");
@@ -78,6 +98,12 @@ public class UserController : AuthorizedControllerBase
         return Ok(user);
     }
 
+    /// <summary>
+    /// Updates a user
+    /// </summary>
+    /// <param name="id">The ID of the user</param>
+    /// <param name="request">The user change request</param>
+    /// <returns>The updated user</returns>
     [HttpPost("{id}")]
     public async Task<IActionResult> UpdateUser(Guid id, [FromBody] ChangeUserRequest request)
     {

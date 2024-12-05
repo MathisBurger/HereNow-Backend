@@ -9,6 +9,9 @@ using PresenceBackend.Shared;
 
 namespace PresenceBackend.Controllers.v1;
 
+/// <summary>
+/// Auth controller
+/// </summary>
 [Route("v1/auth")]
 [ApiController]
 public class AuthController: AuthorizedControllerBase
@@ -23,6 +26,9 @@ public class AuthController: AuthorizedControllerBase
         this.auth = auth;
     }
 
+    /// <summary>
+    /// Gets current auth info
+    /// </summary>
     [AllowAnonymous]
     [HttpGet("")]
     public IActionResult AuthInfo()
@@ -30,6 +36,11 @@ public class AuthController: AuthorizedControllerBase
         return new OkObjectResult(new DefaultResponseModel("OK", "v1 authorization is enabled", "v1.0.0"));
     }
 
+    /// <summary>
+    /// Registers a new user
+    /// </summary>
+    /// <param name="registerRequest">The registration request</param>
+    /// <returns>The created user</returns>
     [TypeFilter(typeof(AuthorizationFilter))]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
@@ -48,6 +59,11 @@ public class AuthController: AuthorizedControllerBase
         return Ok(user);
     }
 
+    /// <summary>
+    /// Logs in a user
+    /// </summary>
+    /// <param name="loginRequest">The login request</param>
+    /// <returns>The refresh token</returns>
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
@@ -59,6 +75,11 @@ public class AuthController: AuthorizedControllerBase
         return Ok(new TokenResponse(await this.auth.GenerateRefreshToken(user), "refresh_token"));
     }
 
+    /// <summary>
+    /// Renews a refresh token
+    /// </summary>
+    /// <param name="tokenRequest">The request with old token</param>
+    /// <returns>The new token</returns>
     [HttpPost("refreshToken/renew")]
     public async Task<IActionResult> RenewRefreshToken([FromBody] TokenRequest tokenRequest)
     {
@@ -70,6 +91,11 @@ public class AuthController: AuthorizedControllerBase
         return Ok(new TokenResponse(await this.auth.GenerateRefreshToken(sessionUser), "refresh_token"));
     }
 
+    /// <summary>
+    /// Creates an access token
+    /// </summary>
+    /// <param name="tokenRequest">Refresh token</param>
+    /// <returns>The access token</returns>
     [HttpPost("accessToken")]
     public async Task<IActionResult> GetAccessToken([FromBody] TokenRequest tokenRequest)
     {
@@ -81,6 +107,11 @@ public class AuthController: AuthorizedControllerBase
         return Ok(new TokenResponse(this.auth.GenerateAccessToken(sessionUser), "access_token"));
     }
 
+    /// <summary>
+    /// Logs out an user
+    /// </summary>
+    /// <param name="tokenRequest">The access token</param>
+    /// <returns>Confirmation result</returns>
     [HttpPost("logout")]
     public async Task<IActionResult> Logout([FromQuery] TokenRequest tokenRequest)
     {

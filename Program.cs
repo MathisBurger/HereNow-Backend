@@ -56,6 +56,19 @@ public class Program
         app.UseRouting();
         app.UseAuthorization();
         app.UseEndpoints(endpoints => endpoints.MapControllers());
+
+        try
+        {
+            using (var scope = app.Services.CreateScope())
+            using (var db = scope.ServiceProvider.GetService<IContext>()!)
+            {
+                db.Database.Migrate();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Migration executed.");
+        }
         
         app.Run();
     }

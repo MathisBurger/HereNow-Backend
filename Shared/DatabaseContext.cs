@@ -3,6 +3,9 @@ using PresenceBackend.Models.Database;
 
 namespace PresenceBackend.Shared;
 
+/// <summary>
+/// Database context
+/// </summary>
 public class DatabaseContext : DbContext, IContext
 {
 

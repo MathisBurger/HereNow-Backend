@@ -6,6 +6,9 @@ using PresenceBackend.Models.Database;
 
 namespace PresenceBackend.Shared;
 
+/// <summary>
+/// Interface for database context
+/// </summary>
 public interface IContext : IDisposable
 {
     

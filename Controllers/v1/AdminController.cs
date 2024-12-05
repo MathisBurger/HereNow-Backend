@@ -7,6 +7,9 @@ using PresenceBackend.Shared;
 
 namespace PresenceBackend.Controllers.v1;
 
+/// <summary>
+/// Controller for handling admin interactions
+/// </summary>
 [ApiController]
 [Route("v1/admin")]
 [TypeFilter(typeof(AuthorizationFilter))]
@@ -22,6 +25,11 @@ public class AdminController : AuthorizedControllerBase
         _hasher = hasher;
     }
 
+    /// <summary>
+    /// Elevates a user to admin
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <returns>The user</returns>
     [HttpPost("elevate/admin")]
     public async Task<IActionResult> ElevateToAdmin([FromBody] UserRequest request)
     {
@@ -45,6 +53,11 @@ public class AdminController : AuthorizedControllerBase
         return Ok(user);
     }
     
+    /// <summary>
+    /// Elevates a user to key user
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <returns>The user</returns>
     [HttpPost("elevate/keyUser")]
     public async Task<IActionResult> ElevateToKeyUser([FromBody] UserRequest request)
     {
@@ -68,6 +81,11 @@ public class AdminController : AuthorizedControllerBase
         return Ok(user);
     }
     
+    /// <summary>
+    /// Elevates a user to observer
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <returns>The user</returns>
     [HttpPost("elevate/observer")]
     public async Task<IActionResult> ElevateToObserver([FromBody] UserRequest request)
     {
@@ -91,6 +109,11 @@ public class AdminController : AuthorizedControllerBase
         return Ok(user);
     }
     
+    /// <summary>
+    /// Elevates a user to member
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <returns>The user</returns>
     [HttpPost("elevate/member")]
     public async Task<IActionResult> ElevateToMember([FromBody] UserRequest request)
     {
@@ -114,6 +137,11 @@ public class AdminController : AuthorizedControllerBase
         return Ok(user);
     }
     
+    /// <summary>
+    /// Revokes admin role from user
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <returns>The user</returns>
     [HttpDelete("revoke/admin")]
     public async Task<IActionResult> RevokeAdmin([FromBody] UserRequest request)
     {
@@ -142,6 +170,11 @@ public class AdminController : AuthorizedControllerBase
         return Ok(user);
     }
     
+    /// <summary>
+    /// Revokes key user role from user
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <returns>The user</returns>
     [HttpDelete("revoke/keyUser")]
     public async Task<IActionResult> RevokeKeyUser([FromBody] UserRequest request)
     {
@@ -165,6 +198,11 @@ public class AdminController : AuthorizedControllerBase
         return Ok(user);
     }
     
+    /// <summary>
+    /// Revokes observer role from user
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <returns>The user</returns>
     [HttpDelete("revoke/observer")]
     public async Task<IActionResult> RevokeObserver([FromBody] UserRequest request)
     {
@@ -188,6 +226,11 @@ public class AdminController : AuthorizedControllerBase
         return Ok(user);
     }
     
+    /// <summary>
+    /// Revokes member role from user
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <returns>The user</returns>
     [HttpDelete("revoke/member")]
     public async Task<IActionResult> RevokeMember([FromBody] UserRequest request)
     {
@@ -211,6 +254,11 @@ public class AdminController : AuthorizedControllerBase
         return Ok(user);
     }
     
+    /// <summary>
+    /// Deletes an user from database
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <returns>Ok result</returns>
     [HttpDelete("deleteUser")]
     public async Task<IActionResult> DeleteUser([FromBody] UserRequest request)
     {
@@ -230,6 +278,10 @@ public class AdminController : AuthorizedControllerBase
         return Ok();
     }
 
+    /// <summary>
+    /// Gets all users
+    /// </summary>
+    /// <returns>All users</returns>
     [HttpGet("allUsers")]
     public async Task<IActionResult> GetAllUsers()
     {
@@ -241,6 +293,11 @@ public class AdminController : AuthorizedControllerBase
         return Ok(this._db.UserRepository.FindAll());
     }
 
+    /// <summary>
+    /// Clocks out a specific user
+    /// </summary>
+    /// <param name="request">The user request</param>
+    /// <returns>Ok result</returns>
     [HttpPost("clockOutUser")]
     public async Task<IActionResult> ClockOutUser([FromBody] UserRequest request)
     {
@@ -267,6 +324,11 @@ public class AdminController : AuthorizedControllerBase
         return Ok(status);
     }
 
+    /// <summary>
+    /// Changes the password of a foreign user
+    /// </summary>
+    /// <param name="request">The request</param>
+    /// <returns>The updated user</returns>
     [HttpPost("changeForeignPassword")]
     public async Task<IActionResult> UpdateForeignUsersPassword([FromBody] ChangeForeignPasswordRequest request)
     {

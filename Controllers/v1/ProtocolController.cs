@@ -5,6 +5,9 @@ using PresenceBackend.Shared;
 
 namespace PresenceBackend.Controllers.v1;
 
+/// <summary>
+/// Controller to handle protocol related actions
+/// </summary>
 [ApiController]
 [Route("v1/protocols")]
 [TypeFilter(typeof(AuthorizationFilter))]
@@ -17,6 +20,10 @@ public class ProtocolController : AuthorizedControllerBase
         _db = db;
     }
     
+    /// <summary>
+    /// Gets all emergencies
+    /// </summary>
+    /// <returns>All emergencies</returns>
     [HttpGet("emergencies")]
     public async Task<IActionResult> GetEmergencies()
     {
@@ -28,6 +35,11 @@ public class ProtocolController : AuthorizedControllerBase
         return Ok(await this._db.ProtocolRepository.FindAll(ProtocolAction.Emergency));
     }
     
+    /// <summary>
+    /// Gets an emergency
+    /// </summary>
+    /// <param name="id">The ID of the emergency</param>
+    /// <returns>The emergency</returns>
     [HttpGet("emergencies/{id}")]
     public async Task<IActionResult> GetEmergency(Guid id)
     {
@@ -39,6 +51,10 @@ public class ProtocolController : AuthorizedControllerBase
         return Ok(await this._db.ProtocolRepository.FindOneById(id));
     }
 
+    /// <summary>
+    /// Creates an emergency
+    /// </summary>
+    /// <returns>The created emergency</returns>
     [HttpPost("emergencies")]
     public async Task<IActionResult> CreateEmergency()
     {

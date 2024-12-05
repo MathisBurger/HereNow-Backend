@@ -4,6 +4,9 @@ using PresenceBackend.Shared;
 
 namespace PresenceBackend.Build;
 
+/// <summary>
+/// Factory to build database context for development
+/// </summary>
 public class DatabaseContextFactory : IDesignTimeDbContextFactory<DatabaseContext>
 {
     public DatabaseContext CreateDbContext(string[] args)

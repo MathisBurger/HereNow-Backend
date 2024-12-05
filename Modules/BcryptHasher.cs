@@ -3,6 +3,9 @@ using PresenceBackend.Models.Database;
 
 namespace PresenceBackend.Modules;
 
+/// <summary>
+/// Password hasher implementation
+/// </summary>
 public class BcryptHasher : IPasswordHasher<User>
 {
     public string HashPassword(User user, string password)
