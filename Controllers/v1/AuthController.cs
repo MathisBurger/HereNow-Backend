@@ -42,7 +42,7 @@ public class AuthController: AuthorizedControllerBase
         User? existingUser = await this.Db.UserRepository.FindUserByUsername(registerRequest.Username);
         if (existingUser is not null)
         {
-            return BadRequest(new ErrorResponse("User already exists.", StatusCodes.Status400BadRequest));
+            return BadRequest(new ErrorResponse("Nutzer existiert bereits.", StatusCodes.Status400BadRequest));
         }
         User user = await this.Db.UserRepository.RegisterUser(registerRequest);
         return Ok(user);
@@ -53,7 +53,7 @@ public class AuthController: AuthorizedControllerBase
     {
         if (!await this.Db.UserRepository.LoginUser(loginRequest))
         {
-            return BadRequest(new ErrorResponse("Invalid username or password.", StatusCodes.Status400BadRequest));
+            return BadRequest(new ErrorResponse("Falscher Nutzername oder Passwort.", StatusCodes.Status400BadRequest));
         }
         User user = (await this.Db.UserRepository.FindUserByUsername(loginRequest.Username))!;
         return Ok(new TokenResponse(await this.auth.GenerateRefreshToken(user), "refresh_token"));

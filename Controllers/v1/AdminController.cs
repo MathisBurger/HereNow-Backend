@@ -27,13 +27,13 @@ public class AdminController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
         
         User? user = await this._db.UserRepository.FindOneById(request.UserId);
         if (user == null)
         {
-            return BadRequest();
+            return BadRequest("Nutzer nicht gefunden");
         }
 
         if (!user.UserRoles.Contains(UserRole.Admin))
@@ -50,13 +50,13 @@ public class AdminController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
         
         User? user = await this._db.UserRepository.FindOneById(request.UserId);
         if (user == null)
         {
-            return BadRequest();
+            return BadRequest("Nutzer nicht gefunden");
         }
 
         if (!user.UserRoles.Contains(UserRole.KeyUser))
@@ -73,13 +73,13 @@ public class AdminController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
         
         User? user = await this._db.UserRepository.FindOneById(request.UserId);
         if (user == null)
         {
-            return BadRequest();
+            return BadRequest("Nutzer nicht gefunden");
         }
 
         if (!user.UserRoles.Contains(UserRole.Observer))
@@ -96,13 +96,13 @@ public class AdminController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
         
         User? user = await this._db.UserRepository.FindOneById(request.UserId);
         if (user == null)
         {
-            return BadRequest();
+            return BadRequest("Nutzer nicht gefunden");
         }
 
         if (!user.UserRoles.Contains(UserRole.Member))
@@ -119,18 +119,18 @@ public class AdminController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
 
         if (request.UserId == this.CurrentUser.Id)
         {
-            return BadRequest("You cannot revoke admin privileges on your own account");
+            return BadRequest("Du kannst dir nicht selbst den Administratoren-Status wegnehmen");
         }
         
         User? user = await this._db.UserRepository.FindOneById(request.UserId);
         if (user == null)
         {
-            return BadRequest();
+            return BadRequest("Nutzer nicht gefunden");
         }
 
         if (user.UserRoles.Contains(UserRole.Admin))
@@ -147,13 +147,13 @@ public class AdminController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
         
         User? user = await this._db.UserRepository.FindOneById(request.UserId);
         if (user == null)
         {
-            return BadRequest();
+            return BadRequest("Nutzer nicht gefunden");
         }
 
         if (user.UserRoles.Contains(UserRole.KeyUser))
@@ -170,13 +170,13 @@ public class AdminController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
         
         User? user = await this._db.UserRepository.FindOneById(request.UserId);
         if (user == null)
         {
-            return BadRequest();
+            return BadRequest("Nutzer nicht gefunden");
         }
 
         if (user.UserRoles.Contains(UserRole.Observer))
@@ -193,13 +193,13 @@ public class AdminController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
         
         User? user = await this._db.UserRepository.FindOneById(request.UserId);
         if (user == null)
         {
-            return BadRequest();
+            return BadRequest("Nutzer nicht gefunden");
         }
 
         if (user.UserRoles.Contains(UserRole.Member))
@@ -216,13 +216,13 @@ public class AdminController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
         
         User? user = await this._db.UserRepository.FindOneById(request.UserId);
         if (user == null)
         {
-            return BadRequest();
+            return BadRequest("Nutzer nicht gefunden");
         }
 
         this._db.EntityManager.Remove(user);
@@ -235,7 +235,7 @@ public class AdminController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
 
         return Ok(this._db.UserRepository.FindAll());
@@ -246,19 +246,19 @@ public class AdminController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
         
         User? user = await this._db.UserRepository.FindOneById(request.UserId);
         if (user == null)
         {
-            return BadRequest("User does not exist");
+            return BadRequest("Nutzer nicht gefunden");
         }
         
         UserStatus? status = await this._db.UserStatusRepository.GetLatestForUser(user);
         if (status == null)
         {
-            return BadRequest("User not clocked in");
+            return BadRequest("Nutzer nicht auf aktiv gesetzt");
         }
 
         status.ClockOut = DateTime.UtcNow;
@@ -272,13 +272,13 @@ public class AdminController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
 
         User? user = await this._db.UserRepository.FindOneById(request.UserId);
         if (user == null)
         {
-            return BadRequest("User does not exist");
+            return BadRequest("Nutzer nicht gefunden");
         }
 
         user.Password = this._hasher.HashPassword(user, request.NewPassword);

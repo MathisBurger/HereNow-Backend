@@ -22,7 +22,7 @@ public class ProtocolController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
 
         return Ok(await this._db.ProtocolRepository.FindAll(ProtocolAction.Emergency));
@@ -33,7 +33,7 @@ public class ProtocolController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
 
         return Ok(await this._db.ProtocolRepository.FindOneById(id));
@@ -44,7 +44,7 @@ public class ProtocolController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Member))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
         
         Protocol protocol = new Protocol() {Creator = this.CurrentUser, Action = ProtocolAction.Emergency};

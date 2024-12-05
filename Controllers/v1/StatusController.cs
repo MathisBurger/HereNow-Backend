@@ -24,7 +24,7 @@ public class StatusController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Member))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist nicht berechtigt hierzu");
         }
         UserStatus? latest = await this.db.UserStatusRepository.GetLatestForUser(this.CurrentUser!);
             
@@ -44,7 +44,7 @@ public class StatusController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Member))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist hierzu nicht berechtigt");
         }
         
         UserStatus? userStatus = await this.db.UserStatusRepository.GetLatestForUser(this.CurrentUser!);
@@ -65,6 +65,6 @@ public class StatusController : AuthorizedControllerBase
             await this.db.EntityManager.SaveChangesAsync();
             return Ok(userStatus);
         }
-        return BadRequest(new ErrorResponse("Something went wrong", StatusCodes.Status500InternalServerError));
+        return BadRequest(new ErrorResponse("Etwas lief schief", StatusCodes.Status500InternalServerError));
     }
 }

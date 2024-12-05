@@ -21,13 +21,13 @@ public class PresenceController : AuthorizedControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllActiveUsers()
     {
-        if (this.CurrentUser != null && (this.CurrentUser.UserRoles.Contains(UserRole.KeyUser) ||
+        if (this.CurrentUser != null && (
                                          this.CurrentUser.UserRoles.Contains(UserRole.Observer) ||
                                          this.CurrentUser.UserRoles.Contains(UserRole.Admin)))
         {
             return Ok(await this._db.UserRepository.FindCurrentClockedIn());
         }
-        return Unauthorized();
+        return Unauthorized("Du hast keine Rechte");
     }
 
     [HttpPost("logoutAll")]

@@ -17,10 +17,10 @@ public class UserController : AuthorizedControllerBase
     private readonly DbAccess _db;
     private readonly IPasswordHasher<User> _passwordHasher;
 
-    public UserController(DbAccess db, IPasswordHasher<User> _passwordHasher)
+    public UserController(DbAccess db, IPasswordHasher<User> passwordHasher)
     {
         _db = db;
-        _passwordHasher = _passwordHasher;
+        _passwordHasher = passwordHasher;
     }
 
     
@@ -29,7 +29,7 @@ public class UserController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
 
         return Ok(await this._db.UserRepository.FindAll());
@@ -40,7 +40,7 @@ public class UserController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
 
         return Ok(await this._db.UserRepository.FindOneById(id));
@@ -57,19 +57,19 @@ public class UserController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || this.CurrentUser.Id == id)
         {
-            return Unauthorized();
+            return Unauthorized("Du kannst nur dein eigenes Passwort zurücksetzen");
         }
         
         User? user = await this._db.UserRepository.FindOneById(id);
         if (user == null)
         {
-            return BadRequest();
+            return BadRequest("Nutzer konnte nicht gefunden werden");
         }
 
         if (_passwordHasher.VerifyHashedPassword(user, user.Password, request.OldPassword) ==
             PasswordVerificationResult.Failed)
         {
-            return BadRequest();
+            return BadRequest("Die Passwörter stimmen nicht überein");
         }
         
         user.Password = _passwordHasher.HashPassword(user, request.NewPassword);
@@ -83,13 +83,13 @@ public class UserController : AuthorizedControllerBase
     {
         if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
         {
-            return Unauthorized();
+            return Unauthorized("Du bist kein Administrator");
         }
         
         User? user = await this._db.UserRepository.FindOneById(id);
         if (user == null)
         {
-            return BadRequest();
+            return BadRequest("Nutzer nicht gefunden");
         }
         user.FirstName = request.FirstName;
         user.LastName = request.LastName;
