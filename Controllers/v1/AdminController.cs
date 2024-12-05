@@ -274,13 +274,13 @@ public class AdminController : AuthorizedControllerBase
         {
             return Unauthorized();
         }
-        
+
         User? user = await this._db.UserRepository.FindOneById(request.UserId);
         if (user == null)
         {
             return BadRequest("User does not exist");
         }
-        
+
         user.Password = this._hasher.HashPassword(user, request.NewPassword);
         this._db.EntityManager.Update(user);
         await this._db.EntityManager.SaveChangesAsync();

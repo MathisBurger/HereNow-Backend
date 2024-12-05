@@ -4,9 +4,9 @@ namespace PresenceBackend.Models.Request;
 
 public class NewPasswordRequest
 {
-    [JsonPropertyName("old-password")]
+    [JsonPropertyName("oldPassword")]
     public string OldPassword { get; set; }
     
-    [JsonPropertyName("new-password")]
+    [JsonPropertyName("newPassword")]
     public string NewPassword { get; set; }
 }

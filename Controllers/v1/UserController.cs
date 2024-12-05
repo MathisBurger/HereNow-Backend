@@ -46,13 +46,13 @@ public class UserController : AuthorizedControllerBase
         return Ok(await this._db.UserRepository.FindOneById(id));
     }
 
-    [HttpGet("/self")]
+    [HttpGet("self")]
     public IActionResult Self()
     {
         return Ok(this.CurrentUser);
     }
     
-    [HttpPost("/self/newPassword")]
+    [HttpPost("self/newPassword")]
     public async Task<IActionResult> ResetPassword(Guid id, [FromBody] NewPasswordRequest request)
     {
         if (this.CurrentUser == null || this.CurrentUser.Id == id)
@@ -73,6 +73,27 @@ public class UserController : AuthorizedControllerBase
         }
         
         user.Password = _passwordHasher.HashPassword(user, request.NewPassword);
+        this._db.EntityManager.Update(user);
+        await this._db.EntityManager.SaveChangesAsync();
+        return Ok(user);
+    }
+
+    [HttpPost("{id}")]
+    public async Task<IActionResult> UpdateUser(Guid id, [FromBody] ChangeUserRequest request)
+    {
+        if (this.CurrentUser == null || !this.CurrentUser.UserRoles.Contains(UserRole.Admin))
+        {
+            return Unauthorized();
+        }
+        
+        User? user = await this._db.UserRepository.FindOneById(id);
+        if (user == null)
+        {
+            return BadRequest();
+        }
+        user.FirstName = request.FirstName;
+        user.LastName = request.LastName;
+        user.Email = request.Email;
         this._db.EntityManager.Update(user);
         await this._db.EntityManager.SaveChangesAsync();
         return Ok(user);
